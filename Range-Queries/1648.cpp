@@ -27,6 +27,19 @@ void build(int p, int l, int r){
     t[p] = merge(t[L(p)], t[R(p)]);
 }
 
+void update(int p, int l, int r, int ul, int ur, ll val){
+    if (l > ur || r < ul) return;
+    if (ul <= l && r <= ur) {
+        t[p] = val;
+        return;
+    }
+    int mid = (l+r)/2;
+    update(L(p), l, mid, ul, ur, val);
+    update(R(p), mid+1, r, ul, ur, val);
+
+    t[p] = merge(t[L(p)], t[R(p)]);
+}
+
 ll Q(int p, int l, int r, int ql, int qr){
     if (l > qr || r < ql) return IDENTITY;
     if (ql <= l && r <= qr) return t[p];
@@ -48,9 +61,19 @@ int main(){
     build(1, 1, n);
 
     while (q--){
-        int l, r;
-        cin >> l >> r;
-        cout << Q(1, 1, n, l, r) << '\n';
+        int t, l, r;
+
+        cin >> t;
+        if (t == 2){
+            int r, l;
+            cin >> l >> r;
+            cout << Q(1, 1, n, l, r) << '\n';
+        }
+        else {
+            int k, v;
+            cin >> k >> v;
+            update(1, 1, n, k, k, v);
+        }
     }
     return 0;
 }
