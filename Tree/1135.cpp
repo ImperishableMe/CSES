@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int const N = 2e5 + 10;
+int const LOG = 19;
+vector<vector<int>> g;
+int dp[LOG][N], tin[N], tout[N], dist[N];
+int timer;
+
+void dfs(int u, int p, int d){
+    dp[0][u] = p;
+    dist[u] = d;
+    tin[u] = ++timer;
+    for (auto v : g[u]){
+        if (v == p) continue;
+        dfs(v, u, d + 1);
+    }
+    tout[u] = ++timer;
+}
+
+
+bool is_ancestor(int u, int v){
+    return tin[u] <= tin[v] && tout[v] <= tout[u];
+}
+
+int lca(int u, int v){
+    if (is_ancestor(u, v)) return u;
+    if (is_ancestor(v, u)) return v;
+
+    for (int i = LOG-1; i >= 0; i--){
+        if (!is_ancestor(dp[i][u], v)) {
+            u = dp[i][u];
+        }
+    }
+    return dp[0][u];
+}
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0);
+    int n, q;
+    cin >> n >> q;
+    g.assign(n+1, vector<int>());
+
+    for (int i = 2; i <= n; i++){
+        int a, b;
+        cin >> a >> b;
+        g[a].push_back(b);
+        g[b].push_back(a);
+    }
+    // very careful, parent of root has to be root
+    dfs(1, 1, 0);  // parent of root is root
+
+    for (int i = 1; i < LOG; i++){
+        for (int j = 1; j <= n; j++){
+            dp[i][j] = dp[i-1][dp[i-1][j]];
+        }
+    }
+
+    while (q--){
+        int a, b;
+        cin >> a >> b;
+        int l = lca(a, b);
+        cout << dist[a] + dist[b] - 2 * dist[l] << '\n';
+    }
+}
