@@ -59,7 +59,7 @@ MODTYPE ONE = 1;
 MODTYPE ZERO = 0;
  
 ll MOD = 1e9 + 7;
-int const N = 1e6 + 10;
+int const N = 2e6 + 10;
 MODTYPE p[N], H[N];
  
 MODTYPE calc_hash(string &s){
@@ -83,31 +83,40 @@ void solve(){
     string s;
 	cin >> s;
 	int n = s.size();
+
+	s += s;
  
 	H[0] = ZERO;
-	for (int i = 1; i <= n; i++){
+	for (int i = 1; i <= 2*n; i++){
 		H[i] = modsum(modmul(H[i-1], B),(s[i-1] - 'a' + 1));
 	}
- 
-    for (int i = 1; i <= n; i++){
-		int up = (n)/i*i;
-		ll cnt = (n)/i;
-		if (n % i != 0){
-			if (H[n%i] != subStr(up + 1, n)) continue;
+
+	int ans = 1;
+	// cout << s << endl;
+
+	for (int i = 2; i <= n; i++){
+		int match_len = 0;
+		int lo = 0, hi = n;
+		while (lo <= hi){
+			int mid = (lo+hi+1)/2;
+			if (subStr(ans, ans+mid-1) == subStr(i, i+mid-1)){
+				lo = mid + 1;
+				match_len = max(match_len, mid);
+			}
+			else hi = mid - 1;
 		}
-		bool can = 1;
- 
-		for (int j = i; j + i <= n; j += i){
-			if (H[i] != subStr(j + 1, j + i)){
-				can = 0;
-				break;
+		// cout << "Current " << s.substr(ans-1, n) << " " << s.substr(i-1, n) << endl;
+		// cout << i << "  " << match_len << endl;
+
+		if (match_len != n){
+			if (s[ans+match_len-1] > s[i+match_len-1]) {
+				ans = i;
 			}
 		}
-		if (can){
-			cout << i << " ";
-		}
-    }
-    cout << "\n";
+		// cout << "ans " << ans << endl;
+	}
+	cout << s.substr(ans-1, n) << "\n";
+ 
 }
 int main(){
  
