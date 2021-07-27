@@ -36,23 +36,22 @@ ll SOD(vector<PII> &pf){
 ll POD(vector<PII> &pf){
 	int n = pf.size();
 	vector<ll> pref(n+2,1), suff(n+2,1);
+
 	for (int i = 1; i <= n; i++){
 		pref[i] = (pref[i-1] * (pf[i-1].second+1)) % (M-1);
 	}
+
 	for (int i = n; i >= 1; i--){
 		suff[i] = (suff[i+1] * (pf[i-1].second+1)) % (M-1);
 	}
+
 	ll ans = 1;
 	for (int i = 0; i < n; i++){
-		// cout << i << endl;
 		auto [p, e] = pf[i];
 		ll expo = pref[i] * suff[i+2] % (M-1);
-		// cout << p << " " << expo << endl;
 		expo = expo * (1LL*e*(e+1)/2 % (M-1)) % (M-1);
-		// cout << p << " " << expo << endl;
 		ans = ans * bigmod(p, expo) % M;
 	}
-	
 	return ans;
 }
 
